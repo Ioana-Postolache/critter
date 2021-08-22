@@ -31,14 +31,17 @@ Create bridge network:
 `docker network create mysql-net`
 Starting a MySQL instance:
 
-`docker run --network mysql-net --name primary-mysql-container -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:8.0`
+`docker run --network mysql-net --name primary-mysql-container -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 6603:3306 -d mysql:8.0`
 
 ... where:
  - mysql-net is the docker network
  - primary-mysql-container is the name you want to assign to your container
  - my-secret-pw is the password to be set for the MySQL root user
+ - 6603:3306 - port mapping
  - 8.0 is the tag specifying the MySQL version you want. 
  
+ Unless you specify the port to use from outside the container, the ports are not exposed. You can't contact a port inside a docker container by default.
+ This is why the -p option is important. It tells docker you want it to allow connections from outside the container, and it tells docker what port it should listen on, to proxy to the mysql process inside the container. [Source](https://stackoverflow.com/questions/60156809/how-to-connect-to-mysql-instance-running-in-container-on-local-machine)
 
  Connect to MySQL from the MySQL command line client
  
@@ -52,15 +55,23 @@ Starting a MySQL instance:
  
  You'll need to add the password you've added in the previous step (i.e., `my-secret-pw`)
  
+ Create database named critter:
+ `CREATE DATABASE IF NOT EXISTS critter;`
+ 
  Add a user:
- `CREATE USER 'ioana'@'localhost'
-    IDENTIFIED BY 'super-password';
+ `CREATE USER 'ioana'@'%'
+    IDENTIFIED BY 'superpassword';
   GRANT ALL
     ON *.*
-    TO 'ioana'@'localhost'
+    TO 'ioana'@'%'
     WITH GRANT OPTION;`
+Note: we used '%' instead of 'localhost' in order to match the connecting to MySQL from different IP addresses
 Check that user was added:
 `SELECT user FROM mysql.user;`
+
+Afterwards, you can start the stopped container: 
+```docker start /primary-mysql-container```
+
 ### Installation
 
 1. Clone or download this repository.
