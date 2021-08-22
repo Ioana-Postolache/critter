@@ -1,7 +1,6 @@
-# Critter Chronologer Project Starter
+# Critter Chronologer Project
 
 Critter Chronologer a Software as a Service application that provides a scheduling interface for a small business that takes care of animals. This Spring Boot project will allow users to create pets, owners, and employees, and then schedule events for employees to provide services for pets.
-
 
 ## Getting Started
 
@@ -13,25 +12,24 @@ Critter Chronologer a Software as a Service application that provides a scheduli
 * [MySQL Server 8](https://dev.mysql.com/downloads/mysql/) (or another standalone SQL instance)
 * [Postman](https://www.getpostman.com/downloads/)
 
-Part of this project involves configuring a Spring application to connect to an external data source. Before beginning this project, you must install a database to connect to. Here are [instructions for installing MySQL 8](https://dev.mysql.com/doc/refman/8.0/en/installing.html).
+Here are [instructions for installing MySQL 8](https://dev.mysql.com/doc/refman/8.0/en/installing.html).
 
 You should install the Server and Connector/J, but it is also convenient to install the Documentation and Workbench.
 
-Alternately, you may wish to run MySQL in a docker container, using [these instructions](https://hub.docker.com/_/mysql/).
-
-After installing the Server, you will need to create a user that your application will use to perform operations on the server. You should create a user that has all permissions on localhost using the sql command found [here](https://dev.mysql.com/doc/refman/8.0/en/creating-accounts.html).
-
-Another SQL database may be used if desired, but do not use the H2 in-memory database as your primary datasource.
-
-### MySQL
+### Instructionson how to run MySQL in a docker container
 Run MySQL in a docker container
-`docker pull mysql`
+```
+docker pull mysql
+```
 
 Create bridge network:
-`docker network create mysql-net`
+```
+docker network create mysql-net
+```
 Starting a MySQL instance:
-
-`docker run --network mysql-net --name primary-mysql-container -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 6603:3306 -d mysql:8.0`
+```
+docker run --network mysql-net --name primary-mysql-container -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 6603:3306 -d mysql:8.0
+```
 
 ... where:
  - mysql-net is the docker network
@@ -53,24 +51,32 @@ Starting a MySQL instance:
  - primary-mysql-container is the name of your original mysql container (connected to the mysql-net Docker network).
  - root is the user
  
- You'll need to add the password you've added in the previous step (i.e., `my-secret-pw`)
+You'll need to add the password you've added in the previous step (i.e., `my-secret-pw`)
  
- Create database named critter:
- `CREATE DATABASE IF NOT EXISTS critter;`
+Create database named critter:
+```
+CREATE DATABASE IF NOT EXISTS critter;
+```
  
- Add a user:
- `CREATE USER 'ioana'@'%'
+Add a user:
+ ```
+CREATE USER 'ioana'@'%'
     IDENTIFIED BY 'superpassword';
-  GRANT ALL
+GRANT ALL
     ON *.*
     TO 'ioana'@'%'
-    WITH GRANT OPTION;`
+    WITH GRANT OPTION;
+```
 Note: we used '%' instead of 'localhost' in order to match the connecting to MySQL from different IP addresses
 Check that user was added:
-`SELECT user FROM mysql.user;`
+```
+SELECT user FROM mysql.user;
+```
 
 Afterwards, you can start the stopped container: 
-```docker start /primary-mysql-container```
+```
+docker start /primary-mysql-container
+```
 
 ### Installation
 
@@ -123,7 +129,3 @@ Each entry in this collection contains information in its `Body` tab if necessar
 * [Google Guava](https://github.com/google/guava) - A set of core libraries used in this project for their collections utilities.
 * [H2 Database Engine](https://www.h2database.com/html/main.html) - An in-memory database used in this project to run unit tests.
 * [MySQL Connector/J](https://www.mysql.com/products/connector/) - JDBC Drivers to allow Java to connect to MySQL Server
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md]()
