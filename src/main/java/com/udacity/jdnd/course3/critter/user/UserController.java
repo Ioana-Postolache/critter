@@ -2,7 +2,7 @@ package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -20,13 +20,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
+    final
     CustomerService customerService;
 
+    public UserController(ModelMapper modelMapper, CustomerService customerService) {
+        this.modelMapper = modelMapper;
+        this.customerService = customerService;
+    }
+
     @PostMapping("/customer")
+    @ResponseStatus(HttpStatus.CREATED)
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO) {
         Customer customer = customerService.save(convertCustomerDTOToCustomer(customerDTO));
         return convertCustomerToCustomerDTO(customer);
@@ -67,13 +72,11 @@ public class UserController {
     }
 
     private CustomerDTO convertCustomerToCustomerDTO(Customer customer) {
-        CustomerDTO customerDTO = modelMapper.map(customer, CustomerDTO.class);
-        return customerDTO;
+        return modelMapper.map(customer, CustomerDTO.class);
     }
 
     private Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
-        Customer customer = modelMapper.map(customerDTO, Customer.class);
-        return customer;
+        return modelMapper.map(customerDTO, Customer.class);
     }
 
 }
