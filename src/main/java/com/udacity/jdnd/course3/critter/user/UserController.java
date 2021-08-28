@@ -1,7 +1,9 @@
 package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.service.CustomerService;
+import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +22,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
+    final
+    EmployeeService employeeService;
+
     private final ModelMapper modelMapper;
 
     final
     CustomerService customerService;
 
-    public UserController(ModelMapper modelMapper, CustomerService customerService) {
+    public UserController(ModelMapper modelMapper, CustomerService customerService, EmployeeService employeeService) {
         this.modelMapper = modelMapper;
         this.customerService = customerService;
+        this.employeeService = employeeService;
     }
 
     @PostMapping("/customer")
@@ -52,13 +58,15 @@ public class UserController {
     }
 
     @PostMapping("/employee")
+    @ResponseStatus(HttpStatus.CREATED)
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+        Employee employee = employeeService.save(convertEmployeeDTOToEmployee(employeeDTO));
+        return convertEmployeeToEmployeeDTO(employee);
     }
 
     @PostMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        return convertEmployeeToEmployeeDTO(employeeService.getEmployeeById(employeeId));
     }
 
     @PutMapping("/employee/{employeeId}")
@@ -77,6 +85,14 @@ public class UserController {
 
     private Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
         return modelMapper.map(customerDTO, Customer.class);
+    }
+
+    private EmployeeDTO convertEmployeeToEmployeeDTO(Employee employee) {
+        return modelMapper.map(employee, EmployeeDTO.class);
+    }
+
+    private Employee convertEmployeeDTOToEmployee(EmployeeDTO employeeDTO) {
+        return modelMapper.map(employeeDTO, Employee.class);
     }
 
 }
