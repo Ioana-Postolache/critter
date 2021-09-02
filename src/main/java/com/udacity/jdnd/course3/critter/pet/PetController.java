@@ -1,7 +1,11 @@
 package com.udacity.jdnd.course3.critter.pet;
 
+import com.udacity.jdnd.course3.critter.service.PetService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,14 +15,25 @@ import java.util.List;
 @RequestMapping("/pet")
 public class PetController {
 
+    private final ModelMapper modelMapper;
+    final PetService petService;
+
+    public PetController(ModelMapper modelMapper, PetService petService) {
+        this.modelMapper = modelMapper;
+        this.modelMapper.addMappings(petFieldMapping);
+        this.modelMapper.addMappings(petMapping);
+        this.petService = petService;
+    }
+
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
-        throw new UnsupportedOperationException();
+        Pet newPet = petService.save(convertPetDTOToPet(petDTO));
+        return convertPetToPetDTO(newPet);
     }
 
     @GetMapping("/{petId}")
     public PetDTO getPet(@PathVariable long petId) {
-        throw new UnsupportedOperationException();
+        return convertPetToPetDTO(petService.getPet(petId));
     }
 
     @GetMapping
@@ -28,6 +43,28 @@ public class PetController {
 
     @GetMapping("/owner/{ownerId}")
     public List<PetDTO> getPetsByOwner(@PathVariable long ownerId) {
-        throw new UnsupportedOperationException();
+        List<PetDTO> petsDTO = new ArrayList<>();
+        petService.getPetsByOwner(ownerId).forEach(pet -> petsDTO.add(convertPetToPetDTO(pet)));
+        return petsDTO;
     }
+
+    private PetDTO convertPetToPetDTO(Pet pet) {
+        return modelMapper.map(pet, PetDTO.class);
+    }
+
+    private Pet convertPetDTOToPet(PetDTO petDTO) {
+        return modelMapper.map(petDTO, Pet.class);
+    }
+
+    PropertyMap<PetDTO, Pet> petMapping = new PropertyMap<PetDTO, Pet>() {
+        protected void configure() {
+            map().getCustomer().setId(source.getOwnerId());
+        }
+    };
+
+    PropertyMap<Pet, PetDTO> petFieldMapping = new PropertyMap<Pet, PetDTO>() {
+        protected void configure() {
+            map().setOwnerId(source.getCustomer().getId());
+        }
+    };
 }
