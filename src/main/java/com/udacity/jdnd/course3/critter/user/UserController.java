@@ -1,9 +1,12 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
+import com.udacity.jdnd.course3.critter.service.PetService;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.spi.MappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,16 +27,33 @@ public class UserController {
 
     final
     EmployeeService employeeService;
-
-    private final ModelMapper modelMapper;
-
     final
     CustomerService customerService;
+    final PetService petService;
+    private final ModelMapper modelMapper;
 
-    public UserController(ModelMapper modelMapper, CustomerService customerService, EmployeeService employeeService) {
-        this.modelMapper = modelMapper;
+    Converter<List<Long>, List<Pet>> petsIdsToPetsConverter = new Converter<List<Long>, List<Pet>>() {
+        public List<Pet> convert(MappingContext<List<Long>, List<Pet>> context) {
+            List<Long> petIds = context.getSource();
+            return petIds != null ? petIds.stream().map(petService::getPet).collect(Collectors.toList()) : null;
+        }
+    };
+
+    Converter<List<Pet>, List<Long>> petsToPetsIdsConverter = context -> {
+        List<Pet> pets = context.getSource();
+        return pets != null ? pets.stream().map(Pet::getId).collect(Collectors.toList()) : null;
+    };
+
+    public UserController(ModelMapper modelMapper, CustomerService customerService,
+                          EmployeeService employeeService, PetService petService) {
         this.customerService = customerService;
         this.employeeService = employeeService;
+        this.petService = petService;
+        this.modelMapper = modelMapper;
+        this.modelMapper.createTypeMap(CustomerDTO.class, Customer.class)
+                .addMappings(mapper -> mapper.using(petsIdsToPetsConverter).map(CustomerDTO::getPetIds, Customer::setPets));
+        this.modelMapper.createTypeMap(Customer.class, CustomerDTO.class)
+                .addMappings(mapper -> mapper.using(petsToPetsIdsConverter).map(Customer::getPets, CustomerDTO::setPetIds));
     }
 
     @PostMapping("/customer")

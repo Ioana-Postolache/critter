@@ -19,12 +19,13 @@ public class PetService {
     }
 
     public Pet save(Pet pet){
-        if (pet.getCustomer() != null) {
-            Customer customer = pet.getCustomer();
-            customer.addPet(pet);
+        Pet newPet = petRepository.save(pet);
+        if (newPet.getCustomer() != null) {
+            Customer customer = newPet.getCustomer();
+            customer.addPet(newPet);
             customerRepository.save(customer);
         }
-        return petRepository.save(pet);
+        return newPet;
     }
 
     public Pet getPet(Long petId){
