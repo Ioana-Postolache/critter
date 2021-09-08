@@ -22,7 +22,7 @@ public class Pet {
     private LocalDate birthDate;
     private String notes;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "owner_id")
     private Customer customer;
@@ -36,4 +36,11 @@ public class Pet {
         this.notes = notes;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 }

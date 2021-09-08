@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.pet;
 
+import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.PetService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -17,12 +18,14 @@ public class PetController {
 
     private final ModelMapper modelMapper;
     final PetService petService;
+    final CustomerService customerService;
 
-    public PetController(ModelMapper modelMapper, PetService petService) {
+    public PetController(ModelMapper modelMapper, PetService petService, CustomerService customerService) {
         this.modelMapper = modelMapper;
         this.modelMapper.addMappings(petFieldMapping);
         this.modelMapper.addMappings(petMapping);
         this.petService = petService;
+        this.customerService = customerService;
     }
 
     @PostMapping
@@ -44,7 +47,7 @@ public class PetController {
     @GetMapping("/owner/{ownerId}")
     public List<PetDTO> getPetsByOwner(@PathVariable long ownerId) {
         List<PetDTO> petsDTO = new ArrayList<>();
-        petService.getPetsByOwner(ownerId).forEach(pet -> petsDTO.add(convertPetToPetDTO(pet)));
+        customerService.getPetsByOwner(ownerId).forEach(pet -> petsDTO.add(convertPetToPetDTO(pet)));
         return petsDTO;
     }
 

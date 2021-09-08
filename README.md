@@ -16,7 +16,7 @@ Here are [instructions for installing MySQL 8](https://dev.mysql.com/doc/refman/
 
 You should install the Server and Connector/J, but it is also convenient to install the Documentation and Workbench.
 
-### Instructionson how to run MySQL in a docker container
+### Instructions on how to run MySQL in a docker container
 Run MySQL in a docker container
 ```
 docker pull mysql

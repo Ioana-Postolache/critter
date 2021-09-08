@@ -22,6 +22,7 @@ public class Customer extends User {
     private String notes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    // CascadeType from a parent to a child entity.
     private List<Pet> pets;
 
     public Customer(Long id, String name, String phoneNumber, String notes, List<Pet> pets) {

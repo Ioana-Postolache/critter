@@ -6,7 +6,6 @@ import com.udacity.jdnd.course3.critter.repository.PetRepository;
 import com.udacity.jdnd.course3.critter.user.Customer;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class PetService {
@@ -32,8 +31,7 @@ public class PetService {
         return petRepository.getOne(petId);
     }
 
-    public List<Pet> getPetsByOwner(Long ownerId){
-        Customer customer = customerRepository.getOne(ownerId);
-        return petRepository.findByCustomer(customer);
+    public Customer getOwnerByPet(Long petId){
+        return petRepository.getOne(petId).getCustomer();
     }
 }

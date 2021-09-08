@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.service;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
 import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
 import com.udacity.jdnd.course3.critter.user.Customer;
 import org.springframework.stereotype.Service;
@@ -23,5 +24,9 @@ public class CustomerService {
 
     public List<Customer> getAllCustomers(){
         return customerRepository.findAll();
+    }
+
+    public List<Pet> getPetsByOwner(Long ownerId){
+        return customerRepository.getOne(ownerId).getPets();
     }
 }
