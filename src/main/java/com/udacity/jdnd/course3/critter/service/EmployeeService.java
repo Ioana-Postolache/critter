@@ -2,11 +2,11 @@ package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
 import com.udacity.jdnd.course3.critter.user.Employee;
+import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class EmployeeService {
@@ -21,8 +21,15 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public List<Employee> getAllEmployees(){
-        return employeeRepository.findAll();
+    public List<Employee> findEmployeesForService(DayOfWeek availableDay, Set<EmployeeSkill> skills){
+        List<Employee> employeesForService = new ArrayList<>();
+        List<Employee> employeesAvailable = employeeRepository.findEmployeesByDaysAvailable(availableDay);
+        for (Employee e : employeesAvailable){
+            if(e.getSkills().containsAll(skills)){
+                employeesForService.add(e);
+            }
+        }
+        return employeesForService;
     }
 
     public Employee getEmployeeById(Long id){
