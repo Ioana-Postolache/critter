@@ -32,7 +32,7 @@ public class EmployeeService {
         return employeesForService;
     }
 
-    public Employee getEmployeeById(Long id){
+    public Employee getEmployee (Long id){
         return employeeRepository.getOne(id);
     }
 

@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,21 +25,21 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    final
+    private final
     EmployeeService employeeService;
-    final
+    private final
     CustomerService customerService;
-    final PetService petService;
+    private final PetService petService;
     private final ModelMapper modelMapper;
 
-    Converter<List<Long>, List<Pet>> petsIdsToPetsConverter = new Converter<List<Long>, List<Pet>>() {
+    private final Converter<List<Long>, List<Pet>> petsIdsToPetsConverter = new Converter<List<Long>, List<Pet>>() {
         public List<Pet> convert(MappingContext<List<Long>, List<Pet>> context) {
             List<Long> petIds = context.getSource();
             return petIds != null ? petIds.stream().map(petService::getPet).collect(Collectors.toList()) : null;
         }
     };
 
-    Converter<List<Pet>, List<Long>> petsToPetsIdsConverter = context -> {
+    private final Converter<List<Pet>, List<Long>> petsToPetsIdsConverter = context -> {
         List<Pet> pets = context.getSource();
         return pets != null ? pets.stream().map(Pet::getId).collect(Collectors.toList()) : null;
     };
@@ -86,7 +85,7 @@ public class UserController {
 
     @PostMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        return convertEmployeeToEmployeeDTO(employeeService.getEmployeeById(employeeId));
+        return convertEmployeeToEmployeeDTO(employeeService.getEmployee(employeeId));
     }
 
     @PutMapping("/employee/{employeeId}")

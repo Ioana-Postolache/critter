@@ -22,7 +22,17 @@ public class PetController {
 
     public PetController(ModelMapper modelMapper, PetService petService, CustomerService customerService) {
         this.modelMapper = modelMapper;
+        PropertyMap<Pet, PetDTO> petFieldMapping = new PropertyMap<Pet, PetDTO>() {
+            protected void configure() {
+                map().setOwnerId(source.getCustomer().getId());
+            }
+        };
         this.modelMapper.addMappings(petFieldMapping);
+        PropertyMap<PetDTO, Pet> petMapping = new PropertyMap<PetDTO, Pet>() {
+            protected void configure() {
+                map().getCustomer().setId(source.getOwnerId());
+            }
+        };
         this.modelMapper.addMappings(petMapping);
         this.petService = petService;
         this.customerService = customerService;
@@ -59,15 +69,4 @@ public class PetController {
         return modelMapper.map(petDTO, Pet.class);
     }
 
-    PropertyMap<PetDTO, Pet> petMapping = new PropertyMap<PetDTO, Pet>() {
-        protected void configure() {
-            map().getCustomer().setId(source.getOwnerId());
-        }
-    };
-
-    PropertyMap<Pet, PetDTO> petFieldMapping = new PropertyMap<Pet, PetDTO>() {
-        protected void configure() {
-            map().setOwnerId(source.getCustomer().getId());
-        }
-    };
 }

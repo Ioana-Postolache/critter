@@ -6,11 +6,10 @@ import com.udacity.jdnd.course3.critter.repository.PetRepository;
 import com.udacity.jdnd.course3.critter.user.Customer;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class PetService {
-    final PetRepository petRepository;
-    final CustomerRepository customerRepository;
+    private final PetRepository petRepository;
+    private final CustomerRepository customerRepository;
 
     public PetService(PetRepository petRepository, CustomerRepository customerRepository) {
         this.petRepository = petRepository;
