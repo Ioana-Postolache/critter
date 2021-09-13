@@ -1,7 +1,9 @@
 package com.udacity.jdnd.course3.critter.service;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
 import com.udacity.jdnd.course3.critter.repository.ScheduleRepository;
 import com.udacity.jdnd.course3.critter.schedule.Schedule;
+import com.udacity.jdnd.course3.critter.user.Employee;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,5 +22,13 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedules(){
         return scheduleRepository.findAll();
+    }
+
+    public List<Schedule> getScheduleForPet(Pet pet) {
+        return scheduleRepository.findAllByPetsIs(pet);
+    }
+
+    public List<Schedule> getScheduleForEmployee(Employee employee) {
+        return scheduleRepository.findAllByEmployeesIs(employee);
     }
 }

@@ -1,6 +1,7 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
+import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import com.udacity.jdnd.course3.critter.service.PetService;
 import com.udacity.jdnd.course3.critter.service.ScheduleService;
@@ -10,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final PetService petService;
     private final EmployeeService employeeService;
+    private final CustomerService customerService;
     private final ModelMapper modelMapper;
 
     private final Converter<List<Long>, List<Pet>> petsIdsToPetsConverter = new Converter<List<Long>, List<Pet>>() {
@@ -57,10 +60,11 @@ public class ScheduleController {
     }
 
     public ScheduleController(ScheduleService scheduleService, ModelMapper modelMapper,
-                              PetService petService, EmployeeService employeeService) {
+                              PetService petService, EmployeeService employeeService, CustomerService customerService) {
         this.scheduleService = scheduleService;
         this.petService = petService;
         this.employeeService = employeeService;
+        this.customerService = customerService;
         this.modelMapper = modelMapper;
         modelMapper.createTypeMap(ScheduleDTO.class, Schedule.class)
                 .addMappings(mapper -> mapper.using(petsIdsToPetsConverter)
@@ -86,16 +90,23 @@ public class ScheduleController {
 
     @GetMapping("/pet/{petId}")
     public List<ScheduleDTO> getScheduleForPet(@PathVariable long petId) {
-        throw new UnsupportedOperationException();
+        return scheduleService.getScheduleForPet(petService.getPet(petId)).stream()
+                .map(this::convertScheduleToScheduleDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/employee/{employeeId}")
     public List<ScheduleDTO> getScheduleForEmployee(@PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        return scheduleService.getScheduleForEmployee(employeeService.getEmployee(employeeId)).stream()
+                .map(this::convertScheduleToScheduleDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/customer/{customerId}")
     public List<ScheduleDTO> getScheduleForCustomer(@PathVariable long customerId) {
-        throw new UnsupportedOperationException();
+        List<Pet> pets = customerService.getPetsByOwner(customerId);
+        List<Schedule> schedulesForCustomer = new ArrayList<>();
+        pets.forEach(pet ->{
+            schedulesForCustomer.addAll(scheduleService.getScheduleForPet(petService.getPet(pet.getId())));
+        });
+        return schedulesForCustomer.stream().map(this::convertScheduleToScheduleDTO).collect(Collectors.toList());
     }
 }
